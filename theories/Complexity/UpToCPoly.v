@@ -1,7 +1,8 @@
 From Undecidability.L.Tactics Require Import LTactics GenEncode.
 From Complexity.Complexity Require Export Definitions.
 From Undecidability.L.Complexity Require Export UpToC UpToCNary.
-From Complexity.Libs.CookPrelim Require Import Tactics. 
+From Complexity.Libs.CookPrelim Require Import Tactics.
+From Complexity.Libs.PSL.Lists Require Export Removal.
 
 (* Coq 8.11 or 8.10 changed lia so that it isn't able to deal with η conversion anymore; use this tactic to fix *)
 Ltac simp_comp_arith := cbn -[Nat.add Nat.mul]; repeat change (fun x => ?h x) with h.
@@ -241,30 +242,13 @@ Proof.
 Qed.
 
 Lemma le_add_l n m : m <= n + m. 
-Proof. lia. Qed. 
-
-
-(** Facts we need to prove that a small assignment has an encoding size which is polynomial in the CNF's encoding size *)
-Lemma list_dupfree_incl_length (X : eqType) (a b : list X) : a <<= b -> dupfree a -> |a| <= |b|. 
-Proof. 
-  intros H1 H2. eapply NoDup_incl_length. 
-  - apply dupfree_Nodup, H2.
-  - apply H1. 
-Qed. 
-
-Lemma rem_app_eq (X : eqType) (l1 l2 : list X) (x : X) : rem (l1 ++ l2) x = rem l1 x ++ rem l2 x. 
-Proof. 
-  induction l1; cbn; [easy | ].
-  destruct Dec; cbn. 
-  - fold (rem (l1 ++ l2) x). rewrite IHl1. easy.
-  - fold (rem (l1 ++ l2) x). now rewrite IHl1. 
-Qed. 
+Proof. lia. Qed.
 
 Lemma list_rem_size_le (X : eqType) `{H : encodable X} (l : list X) x : size (enc (rem l x)) <= size (enc l). 
 Proof. 
-  induction l. 
-  - cbn. lia. 
-  - cbn. destruct Dec; cbn; rewrite !list_size_cons, IHl; lia. 
+  induction l.
+  - cbn. lia.
+  - cbn. destruct Dec; cbn; rewrite !list_size_cons, IHl; lia.
 Qed. 
 
 Lemma list_incl_dupfree_size (X : eqType) `{encodable X} (a b : list X) : a <<= b -> dupfree a -> size (enc a) <= size (enc b). 
@@ -278,7 +262,7 @@ Proof.
     2: { 
       assert (rem (a0 :: a) a0 = a).  
       { cbn. destruct Dec; [congruence | ]. cbn. 
-       fold (rem a a0). now rewrite rem_id. 
+       fold (rem a a0). now apply rem_id.
       } 
       rewrite <- H3. now apply rem_mono. 
     } 

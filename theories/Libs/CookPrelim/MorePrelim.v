@@ -64,20 +64,17 @@ End subsequence.
 Lemma dupfree_nthe (X : Type) (l : list X) : dupfree l <-> forall i j a b, nth_error l i = Some a -> nth_error l j = Some b -> i <> j -> a <> b.
 Proof. 
   split.
-  - induction 1. 
-    + intros. destruct i; cbn in H; congruence.  
-    + intros. destruct i, j. 
-      * congruence. 
-      * cbn in H1, H2. apply nth_error_In in H2. assert (x = a) by congruence. rewrite H4 in H. congruence. 
-      * cbn in H1, H2. apply nth_error_In in H1. assert (x = b) by congruence. rewrite H4 in H. congruence. 
-      * cbn in H1, H2. apply IHdupfree with (i:= i) (j:=j); [assumption | assumption | congruence]. 
+  - rewrite NoDup_nth_error.
+    intros ?H i j a b ?H ?H ?H ?H. apply H2, H.
+    + eapply nth_error_Some_lt. exact H0.
+    + congruence.
   - induction l. 
-    + intros. constructor. 
-    + intros. constructor. 
-      * intros Hel%In_nth_error.  destruct Hel as (j & Hel). 
-        specialize (H 0 (S j) a a). cbn in H. apply H; firstorder. 
-      * apply IHl. firstorder. apply H with (i := S i) (j:= S j); firstorder. 
-Qed. 
+    + intros. constructor.
+    + intros. constructor.
+      * intros Hel%In_nth_error.  destruct Hel as (j & Hel).
+        specialize (H 0 (S j) a a). cbn in H. apply H; firstorder.
+      * apply IHl. firstorder. apply H with (i := S i) (j:= S j); firstorder.
+Qed.
 
 Section remove.
   Variable (X : Type).
@@ -108,15 +105,7 @@ Section remove.
   Qed. 
 End remove.
 
-Proposition map_dupfree (X Y : Type) (f : X -> Y) (A : list X) : dupfree (map f A) -> dupfree A.
-Proof. 
-  remember (map f A) as B. intros H1. revert A HeqB. induction H1; intros B HeqB.
-  - destruct B; cbn in HeqB; [constructor | congruence].
-  - destruct B; cbn in HeqB; [congruence | ].
-    inv HeqB. constructor. 
-    + rewrite in_map_iff in H. contradict H. eauto.
-    + now apply IHdupfree. 
-Qed. 
+Notation map_dupfree := NoDup_map_inv.
 
 Require Import Lia.
 (*Require Template.utils.*)
@@ -301,8 +290,6 @@ Proof.
   - cbn in H. eauto. 
   - inv H. apply IHn in H2 as (z & H3 & H4). exists z. eauto.
 Qed. 
-
-Notation injective := Bijection.injective.
 
 Lemma getPosition_map (X Y : eqType) (f : X -> Y) (l : list X) (x : X) : injective f -> getPosition (map f l) (f x) = getPosition l x. 
 Proof.
@@ -568,14 +555,14 @@ Proof.
   - destruct l1; cbn; [ easy | ]. now rewrite IHm. 
 Qed. 
 
-Lemma dupfree_map_getPosition (X : eqType) (l : list X) : Dupfree.dupfree l -> seq 0 (|l|) = map (getPosition l) l. 
+Lemma dupfree_map_getPosition (X : eqType) (l : list X) : NoDup l -> seq 0 (|l|) = map (getPosition l) l. 
 Proof. 
   intros H. enough (forall n, seq n (|l|) = map (fun x => n + getPosition l x) l). 
   { specialize (H0 0). apply H0. }
   induction H; intros; [ easy | ]. 
   cbn. destruct Dec; [ | congruence]. 
-  rewrite Nat.add_0_r. f_equal. rewrite (IHdupfree (S n)). 
-  clear IHdupfree e. 
+  rewrite Nat.add_0_r. f_equal. rewrite (IHNoDup (S n)). 
+  clear IHNoDup e. 
   apply map_ext_in. 
   intros a H1. destruct (Dec (a = x)); [ congruence | lia ].  
 Qed. 

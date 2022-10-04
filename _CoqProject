@@ -78,6 +78,8 @@ theories/Libs/CookPrelim/MorePrelim.v
 theories/Libs/CookPrelim/FlatFinTypes.v
 
 
+theories/Libs/PSL/Lists/Filter.v
+theories/Libs/PSL/Lists/Removal.v
 
 
 theories/NP/Clique/Clique.v
