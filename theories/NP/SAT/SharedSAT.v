@@ -1,6 +1,7 @@
-From Undecidability.L Require Import L.
-From Undecidability.L.Datatypes Require Import Lists LNat. 
 Require Import Lia. 
+From Undecidability.L Require Import L.
+From Undecidability.L.Datatypes Require Import Lists LNat.
+From Complexity.Libs.PSL.Lists Require Export BaseLists.
 
 (** * Shared Definitions for SAT and FSAT *)
 

@@ -1,9 +1,9 @@
-
 From Complexity.Complexity Require Export NP ONotation. 
 From Undecidability.L.Tactics Require Import LTactics.
 From Complexity.Libs Require Import MorePrelim.
 From Undecidability.L Require Export Datatypes.Lists Datatypes.LNat.
-From Undecidability.L.Functions Require Import EqBool. 
+From Undecidability.L.Functions Require Import EqBool.
+From Complexity.Libs.PSL.Lists Require Export Removal.
 
 (** why the heck isn't this in the standard library? no one knows... *)
 #[export]
@@ -372,19 +372,10 @@ End fixXY.
 (** Facts we need to prove that a small assignment has an encoding size which is polynomial in the CNF's encoding size *)
 Lemma list_dupfree_incl_length (X : eqType) (a b : list X) : a <<= b -> dupfree a -> |a| <= |b|. 
 Proof. 
-  intros H1 H2. eapply NoDup_incl_length. 
-  - apply dupfree_Nodup, H2.
-  - apply H1. 
-Qed. 
+  intros H1 H2. eapply NoDup_incl_length; assumption.
+Qed.
 
-Lemma rem_app_eq (X : eqType) (l1 l2 : list X) (x : X) : rem (l1 ++ l2) x = rem l1 x ++ rem l2 x. 
-Proof. 
-  induction l1; cbn; [easy | ].
-  destruct Dec; cbn. 
-  - fold (rem (l1 ++ l2) x). rewrite IHl1. easy.
-  - fold (rem (l1 ++ l2) x). now rewrite IHl1. 
-Qed. 
-
+(*TODO: duplicate of lemma in ./theories/Complexity/UpToCPoly.v *)
 Lemma list_rem_size_le (X : eqType) `{H : encodable X} (l : list X) x : size (enc (rem l x)) <= size (enc l). 
 Proof. 
   induction l. 

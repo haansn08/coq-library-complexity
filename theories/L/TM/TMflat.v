@@ -1,6 +1,7 @@
 From Undecidability Require Import TM.Util.TM_facts.
-Require Import Undecidability.Shared.Libs.PSL.FiniteTypes.
-From Undecidability.Shared.Libs.PSL.FiniteTypes Require Import VectorFin Cardinality.
+From Undecidability.Shared.Libs.PSL Require Import FiniteTypes.
+From Undecidability.Shared.Libs.PSL.FiniteTypes Require Import VectorFin.
+From Complexity.Libs.PSL.FiniteTypes Require Import Cardinality.
 
 (** A firstorder encoding and the connection to an arbitrary TM *)
 Inductive flatTM : Type :=

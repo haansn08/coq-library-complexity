@@ -1,9 +1,7 @@
 -Q theories Complexity
--Q coq-library-undecidability/theories Undecidability
 
 -arg -w -arg -notation-overridden
 COQDOCFLAGS = "--charset utf-8 -s --with-header website/resources/header.html --with-footer website/resources/footer.html --index indexpage"
-
 
 theories/Complexity/Definitions.v
 theories/Complexity/EncodableP.v
@@ -68,8 +66,6 @@ theories/L/TM/TMflatComp.v
 theories/L/TM/TapeDecode.v
 theories/L/TM/TMflatten.v
 
-
-
 theories/Libs/Pigeonhole.v
 theories/Libs/UniformHomomorphisms.v
 theories/Libs/CookPrelim/PolyBounds.v
@@ -77,10 +73,21 @@ theories/Libs/CookPrelim/Tactics.v
 theories/Libs/CookPrelim/MorePrelim.v
 theories/Libs/CookPrelim/FlatFinTypes.v
 
-
+theories/Libs/PSL/Bijection.v
+theories/Libs/PSL/Lists/BaseLists.v
+theories/Libs/PSL/Lists/Cardinality.v
+theories/Libs/PSL/Lists/Dupfree.v
 theories/Libs/PSL/Lists/Filter.v
 theories/Libs/PSL/Lists/Removal.v
-
+theories/Libs/PSL/FiniteTypes.v
+theories/Libs/PSL/FiniteTypes/Arbitrary.v
+theories/Libs/PSL/FiniteTypes/BasicFinTypes.v
+theories/Libs/PSL/FiniteTypes/Cardinality.v
+theories/Libs/PSL/FiniteTypes/CompoundFinTypes.v
+theories/Libs/PSL/FiniteTypes/DepPairs.v
+theories/Libs/PSL/FiniteTypes/FiniteFunction.v
+theories/Libs/PSL/FiniteTypes/FinTypes.v
+theories/Libs/PSL/FiniteTypes/VectorFin.v
 
 theories/NP/Clique/Clique.v
 theories/NP/Clique/FlatClique.v

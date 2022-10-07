@@ -1,6 +1,6 @@
 Require Import Undecidability.Shared.Libs.PSL.FiniteTypes.
 From Undecidability Require Import L.Functions.EqBool.
-From Undecidability.Shared.Libs.PSL.FiniteTypes Require Import VectorFin Cardinality.
+From Complexity.Libs.PSL.FiniteTypes Require Import Cardinality FiniteFunction VectorFin.
 
 From Undecidability Require Import TM.Util.TM_facts.
 From Complexity Require Import L.TM.TMflat.
@@ -37,7 +37,7 @@ Definition unflatten_acts (sig:finType) n (l__r : list (option nat * move)) : (V
   | Some l__r => l__r
   | _ => Vector.const (None,Nmove) n
   end.
-  
+
 Definition unflatten_trans (states:finType) (sig:finType) d n (f:list (nat * list (option nat) * (nat * list (option nat * move))))
   : states * Vector.t (option sig) n -> states * Vector.t (option sig * move) n :=
   fun '(st,l) =>

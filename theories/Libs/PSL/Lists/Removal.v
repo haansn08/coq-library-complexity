@@ -1,5 +1,4 @@
-From Undecidability.Shared.Libs.PSL Require Export BaseLists.
-From Complexity.Libs.PSL.Lists Require Export Filter.
+From Complexity.Libs.PSL.Lists Require Export Filter BaseLists.
 
 (* *** Element removal *)
 
@@ -73,13 +72,13 @@ Section Removal.
     unfold rem; rewrite filter_app; auto.
   Qed.
 
-(*  Lemma rem_equi x A :
+  Lemma rem_equi x A :
     x::A === x::rem A x.
   Proof.
     split; intros y; 
     intros [[]|E]; decide (x=y) as [[]|D]; 
     eauto using rem_in, rem_neq. 
-  Qed. *)
+  Qed.
 
   Lemma rem_comm A x y :
     rem (rem A x) y = rem (rem A y) x.
@@ -106,11 +105,11 @@ Section Removal.
     apply Dec_reflect. congruence.
   Qed.
 
-(*  Lemma rem_reorder x A :
+  Lemma rem_reorder x A :
     x el A -> A === x :: rem A x.
   Proof.
     intros D. rewrite <- rem_equi. apply equi_push, D.
-  Qed. *)
+  Qed.
 
   Lemma rem_inclr A B x :
     A <<= B -> ~ x el A -> A <<= rem B x.
@@ -130,3 +129,4 @@ Section Removal.
 End Removal.
 
 #[export] Hint Resolve rem_not_in rem_incl rem_mono rem_cons rem_cons' rem_app rem_app' rem_in rem_neq rem_inclr : core.
+#[export] Hint Unfold equi : core.
