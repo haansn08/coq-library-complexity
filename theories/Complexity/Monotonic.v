@@ -1,5 +1,6 @@
 From smpl Require Import Smpl.
-From Undecidability Require Import L.Prelim.MoreBase.
+Require Import Arith Morphisms.
+
 Definition monotonic (f:nat -> nat) : Prop :=
   forall x x', x <= x' -> f x <= f x'.
 
@@ -12,9 +13,9 @@ Qed.
 
 Lemma monotonic_add f1 f2: monotonic f1 -> monotonic f2 -> monotonic (fun x => f1 x + f2 x).
 Proof.
-  unfold monotonic.
-  intros H1 H2 **.
-  rewrite H1,H2. reflexivity. all:eassumption.
+  intros H1 H2 x x' H. apply Nat.add_le_mono.
+  - apply H1. assumption.
+  - apply H2. assumption.
 Qed.
 
 Lemma monotonic_S f : monotonic f -> monotonic (fun x => S (f x)). 
@@ -24,23 +25,19 @@ Qed.
 
 Lemma monotonic_mul f1 f2: monotonic f1 -> monotonic f2 -> monotonic (fun x => f1 x * f2 x).
 Proof.
-  unfold monotonic.
-  intros H1 H2 **.
-  rewrite H1,H2. reflexivity. all:eassumption.
+  intros H1 H2 x x' H. apply Nat.mul_le_mono.
+  - apply H1. assumption.
+  - apply H2. assumption.
 Qed.
 
 Require Import Nat.
 Lemma monotonic_pow_c f1 c: monotonic f1  -> monotonic (fun x => (f1 x) ^ c).
 Proof.
-  intros **. 
-  unfold monotonic.
-  intros H1 **. eapply PeanoNat.Nat.pow_le_mono_l. apply H. easy.
+  intros ** H1 **. eapply PeanoNat.Nat.pow_le_mono_l. apply H. easy.
 Qed.
 
 Lemma monotonic_x: monotonic (fun x => x).
-Proof.
-  unfold monotonic. easy.
-Qed.
+Proof. easy. Qed.
 
 Lemma monotonic_comp f1 f2: monotonic f1 -> monotonic f2 -> monotonic (fun x => f1 (f2 x)). 
 Proof.

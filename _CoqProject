@@ -49,6 +49,14 @@ theories/L/AbstractMachines/FlatPro/SizeAnalysisUnfoldClos.v
 #L/AbstractMachines/FlatPro/Computable/HeapStep.v
 theories/L/AbstractMachines/FlatPro/Computable/LPro.v
 
+theories/L/Prelim/MoreBase.v
+theories/L/Prelim/MoreList.v
+theories/L/Prelim/ARS.v
+
+theories/L/Util/L_facts.v
+
+theories/L/Tactics/ComputableTime.v
+
 theories/L/Datatypes/LBinNums.v
 theories/L/Datatypes/LComparison.v
 theories/L/Datatypes/LDepPair.v
