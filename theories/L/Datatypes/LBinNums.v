@@ -1,6 +1,9 @@
-From Undecidability.L Require Import Tactics.LTactics Datatypes.LUnit Datatypes.LBool Datatypes.LNat.
+From Undecidability.L.Tactics Require Import LTactics.
+From Undecidability.L.Datatypes Require Import LUnit LBool LNat.
 Require Import BinNums.
+From Complexity.L.Tactics Require Import ComputableTime ComputableTactics.
 Require Import Undecidability.L.Tactics.GenEncode.
+
 
 (** ** Encoding of positive binary numbers *)
 MetaCoq Run (tmGenEncode "positive_enc" positive).
