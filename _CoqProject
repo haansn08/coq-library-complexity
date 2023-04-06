@@ -56,6 +56,7 @@ theories/L/Prelim/ARS.v
 theories/L/Util/L_facts.v
 
 theories/L/Tactics/ComputableTime.v
+theories/L/Tactics/Lsimpl.v
 theories/L/Tactics/ComputableTactics.v
 
 theories/L/Datatypes/LBinNums.v

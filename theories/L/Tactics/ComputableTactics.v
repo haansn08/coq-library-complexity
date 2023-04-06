@@ -1,8 +1,53 @@
 Require Export Undecidability.L.Tactics.ComputableTactics.
-From Undecidability.L.Tactics Require Import Lbeta Lproc Lsimpl.
-Require Import Complexity.L.Tactics.ComputableTime.
+From Undecidability.L.Tactics Require Import Lbeta Lproc.
+From Complexity.L.Tactics Require Import ComputableTime Lsimpl.
+From Complexity.L.Util Require Import L_facts.
 
 Require Import MetaCoq.Template.All.
+
+Ltac intro_to_assumed x :=
+  once lazymatch goal with
+    H : Lock _ |- _  =>
+    let tx := type of x in
+    revert x;unlock H;revert H;
+    refine (_ : (forall (x:tx), _:Prop) -> _);
+    intros H x;specialize (H x);lock H
+  end.
+
+Ltac split_assumed :=
+  once lazymatch goal with
+    H : Lock _ |- _  =>
+    unlock H;
+    split;[eapply proj1 in H|eapply proj2 in H];lock H
+  end.
+
+Ltac is_assumed :=
+  once lazymatch goal with
+    H : Lock _ |- ?G  =>
+    unlock H; refine H;shelve
+  end.
+
+Ltac close_assumed :=
+  once lazymatch goal with
+    H : Lock _ |- ?G  =>unlock H;assert True by exact H
+  end.
+
+Ltac is_assumed_add :=
+  once lazymatch goal with
+    H : Lock _ |- ?G  =>
+    unlock H; refine (proj1 H);shelve
+  end.
+
+Ltac ugly_fix_fix2 IH n :=
+  (* we must destruct to allow the fix to reduce...*)
+  once lazymatch eval cbn in n with
+    0 => fix IH 1
+  | 1 => fix IH 5
+  | 2 => fix IH 9
+  | 3 => fix IH 13
+  | _ => let m := eval cbn in (1+4*n) in
+            fail 1000 "please add '| "n" => fix IH"m"'" " in the definition of Ltac-tactic ugly_fix_fix2!"
+  end.
 
 Ltac cstep' extractSimp:=
   let x := fresh "x" in
@@ -100,9 +145,9 @@ Ltac cstep' extractSimp:=
               let xInts := fresh x "Ints" in
               (refine (computesTimeExpStep (fT:=fun x xT => _) _ _ _ _) ;
                [|try Intern.recStepNew P;extractSimp;Intern.shelveIfUnsolved "pos8"|Lproc;Intern.shelveIfUnsolved "pos9"|]);
-              [try reflexivity;Intern.is_assumed_add|];Intern.clean_assumed;
+              [try reflexivity;is_assumed_add|];is_assumed_add;
               (*simple notypeclasses refine (_:computes (_ ~> _) _ _ (fun x xInt xNorm => (_,_)));try exact tt;shelve_unifiable;*) 
-              intros x xInt xT; Intern.intro_to_assumed x;Intern.intro_to_assumed xT;intro xInts;
+              intros x xInt xT; intro_to_assumed x;intro_to_assumed xT;intro xInts;
               change xInt with (@extT _ _ x _ (Build_computableTime xInts));
               once lazymatch type of xInts with
                 computesTime (@TyB _ ?reg) _ _ _=>
@@ -118,9 +163,9 @@ Ltac cstep' extractSimp:=
       step n;
         
       let IH := fresh "IH" P in
-      Intern.ugly_fix_fix2 IH recArg;
+      ugly_fix_fix2 IH recArg;
         let rec loop n := (* destruct the struct-recursive argument*)
-            (Intern.clean_assumed;
+            (is_assumed_add;
              let x := fresh "x" in
              let xT := fresh x "T" in
              intros x ? xT ? ;
@@ -151,8 +196,8 @@ Ltac cstep' extractSimp:=
       let vProc := fresh "vProc" in
       (*simple notypeclasses refine (_:computes (tt1 ~> tt2) _ _ (fun x xInt xNorm => (_,_)));try exact tt;shelve_unifiable;*)
       eapply computesTimeTyArr_helper with (time := fun x xT => _);[try Lproc;Intern.shelveIfUnsolved "pos3"|];
-      intros x xT;Intern.intro_to_assumed x;Intern.intro_to_assumed xT;
-      Intern.split_assumed;[now Intern.is_assumed|];
+      intros x xT;intro_to_assumed x;intro_to_assumed xT;
+      split_assumed;[now is_assumed|];
       intros xInt xInts;
       change xInt with (@extT _ _ x _ (Build_computableTime xInts));
       once lazymatch tt1 with
@@ -164,7 +209,7 @@ Ltac cstep' extractSimp:=
     end
   (* complexity: *)
 
-  | H : Lock _ |- computesTime (TyB _) _ ?t ?tt=> has_no_evar t;Intern.close_assumed; destruct tt;apply computesTimeTyB
+  | H : Lock _ |- computesTime (TyB _) _ ?t ?tt=> has_no_evar t;close_assumed; destruct tt;apply computesTimeTyB
   | H : Lock _ |-computesTime _ _ (@extT _ _) _ => apply extTCorrect
 
   | |- computesTime _ _ _ _ =>
@@ -178,7 +223,21 @@ Ltac cstep' extractSimp:=
     end
   end.
 
-Ltac cstep := cstep' Intern.extractSimple.
+Ltac extractCorrectCrush :=
+  idtac;
+   try Complexity.L.Tactics.Lsimpl.Lsimpl;try Lreflexivity;
+   try repeat' (repeat' Intern.destructRefine;Complexity.L.Tactics.Lsimpl.Lsimpl;try Lreflexivity);
+  try Lreflexivity.
+
+Ltac extractSimple :=
+  lazymatch goal with
+    |- eval _ _ => extractCorrectCrush
+  | |- evalLe _ _ _ => extractCorrectCrush
+  | |- evalIn _ _ _ => Complexity.L.Tactics.Lsimpl.Lsimpl_old;fail "evalIn does not support full Lrewrite and should only occur when simplifying rho/recursion"
+  | |- ?G => idtac "cstep found unexpected" G
+  end;try (idtac;[idtac "could not simplify some occuring term, shelved instead"];shelve).
+
+Ltac cstep := cstep' extractSimple.
 
 Ltac infer_instancesT :=
   repeat match goal with
